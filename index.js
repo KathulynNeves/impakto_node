@@ -65,6 +65,66 @@ app.delete('/contrato/:id', async (req, res) => {
     }
 });
 
+// Rota para criar um notificação
+app.post('/notificacao', async (req, res) => {
+  try {
+    const notificacao = await Notificacao.create(req.body);
+    res.status(201).json(notificacao);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/notificacoes', async (req, res) => {
+    try {
+      const notificacoes = await Notificacao.findAll();
+      res.json(notificacoes);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.get('/notificacoes/:id', async (req, res) => {
+    try {
+      const notificacao = await Notificacao.findByPk(req.params.id);
+      if (notificacao) {
+        res.json(notificacao);
+      } else {
+        res.status(404).json({ error: 'Notificação não encontrada' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.put('/notificacoes/:id', async (req, res) => {
+    try {
+      const notificacao = await Notificacao.findByPk(req.params.id);
+      if (notificacao) {
+        await notificacao.update(req.body);
+        res.json(notificacao);
+      } else {
+        res.status(404).json({ error: 'Notificação não encontrada' });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+});
+  
+app.delete('/notificacao/:id', async (req, res) => {
+    try {
+      const notificacao = await Notificacao.findByPk(req.params.id);
+      if (notificacao) {
+        await notificacao.destroy();
+        res.json({ message: 'Notificação deletada' });
+      } else {
+        res.status(404).json({ error: 'Notificação não encontrada' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+
 
 // Inicia o servidor
 const PORT = 3000;

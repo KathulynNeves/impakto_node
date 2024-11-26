@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
 
 // Carrega os modelos passando `sequelize`
 const Contrato = require('./Contrato.js')(sequelize);
-
+const Notificacao = require('./Notificacao')(sequelize);
 
 //relaçao um para um 
 //Contrato
@@ -21,6 +21,16 @@ Outdoor.belongsTo(Contrato, {
   as: 'contrato'
 }); 
 
+//Notificação
+Notificacao.hasMany(Usuario,{
+  foreignKey: 'usuarioId',
+  as: 'usuario'
+});
+Usuario.belongsTo(Notificacao,{
+  foreignKey: 'usuarioId',
+  as: 'notificacao'
+});
+
 
 // Sincroniza o banco de dados
 sequelize.sync()
@@ -30,4 +40,7 @@ sequelize.sync()
 module.exports = { 
     sequelize, 
     Contrato, 
+    Notificacao,
 };
+
+
