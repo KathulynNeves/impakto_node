@@ -10,6 +10,28 @@ const sequelize = new Sequelize({
 const Contrato = require('./Contrato.js')(sequelize);
 const Notificacao = require('./Notificacao')(sequelize);
 const Usuario = require('./Usuario')(sequelize);
+const Cliente = require('./Cliente')(sequelize);
+
+
+//relaçao um para muitos cliente-contrato
+//Cliente
+Cliente.hasMany(Contrato, {
+  foreignKey: 'idCliente', 
+  as: 'contratos'
+}); 
+Contrato.belongsTo(Cliente, {
+  foreignKey: 'idCliente', 
+  as: 'cliente'
+});
+
+Cliente.hasOne(Agendamento, {
+  foreignKey: 'clienteId', 
+  as: 'agendamento'
+}); 
+Agendamento.belongsTo(Cliente, {
+  foreignKey: 'clienteId', 
+  as: 'cliente'
+}); 
 
 //relaçao um para um 
 //Contrato

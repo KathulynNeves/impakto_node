@@ -1,9 +1,69 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { sequelize, Contrato, Notificacao, Usuario} = require('./models'); // importa os modelos corretamente
+const { sequelize, Contrato, Notificacao, Usuario, Cliente} = require('./models'); // importa os modelos corretamente
 
 const app = express();
 app.use(bodyParser.json());
+
+// Rota para criar um cliente
+app.post('/cliente', async (req, res) => {
+  try {
+    const cliente = await Cliente.create(req.body);
+    res.status(201).json(cliente);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+app.get('/clientes', async (req, res) => {
+    try {
+      const clientes = await Cliente.findAll();
+      res.json(clientes);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.get('/clientes/:id', async (req, res) => {
+    try {
+      const cliente = await Cliente.findByPk(req.params.id);
+      if (cliente) {
+        res.json(cliente);
+      } else {
+        res.status(404).json({ error: 'Cliente não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.put('/clientes/:id', async (req, res) => {
+    try {
+      const cliente = await Cliente.findByPk(req.params.id);
+      if (cliente) {
+        await cliente.update(req.body);
+        res.json(cliente);
+      } else {
+        res.status(404).json({ error: 'Cliente não encontrado' });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+});
+  
+app.delete('/cliente/:id', async (req, res) => {
+    try {
+      const cliente = await Cliente.findByPk(req.params.id);
+      if (cliente) {
+        await cliente.destroy();
+        res.json({ message: 'Cliente deletado' });
+      } else {
+        res.status(404).json({ error: 'Cliente não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+
 
 // Rota para criar um contrato
 app.post('/contrato', async (req, res) => {
