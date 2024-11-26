@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parse": "^0.1.0",
     "express": "^4.21.1",
+    "impakto_node": "file:",
     "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7"
   }
