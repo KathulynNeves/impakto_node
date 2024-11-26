@@ -9,6 +9,7 @@ const sequelize = new Sequelize({
 // Carrega os modelos passando `sequelize`
 const Contrato = require('./Contrato.js')(sequelize);
 const Notificacao = require('./Notificacao')(sequelize);
+const Usuario = require('./Usuario')(sequelize);
 
 //relaçao um para um 
 //Contrato
@@ -41,6 +42,7 @@ module.exports = {
     sequelize, 
     Contrato, 
     Notificacao,
+    Usuario,
 };
 
 

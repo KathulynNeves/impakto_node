@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { sequelize, Contrato} = require('./models'); // importa os modelos corretamente
+const { sequelize, Contrato, Notificacao, Usuario} = require('./models'); // importa os modelos corretamente
 
 const app = express();
 app.use(bodyParser.json());
@@ -126,8 +126,72 @@ app.delete('/notificacao/:id', async (req, res) => {
 });
 
 
+
+// Rota para criar um usuario
+app.post('/usuario', async (req, res) => {
+  try {
+    const usuario = await Usuario.create(req.body);
+    res.status(201).json(usuario);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/usuarios', async (req, res) => {
+    try {
+      const usuarios = await Usuario.findAll();
+      res.json(usuarios);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.get('/usuarios/:id', async (req, res) => {
+    try {
+      const usuario = await Usuario.findByPk(req.params.id);
+      if (usuario) {
+        res.json(usuario);
+      } else {
+        res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.put('/usuarios/:id', async (req, res) => {
+    try {
+      const usuario = await Usuario.findByPk(req.params.id);
+      if (usuario) {
+        await usuario.update(req.body);
+        res.json(usuario);
+      } else {
+        res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+});
+  
+app.delete('/usuario/:id', async (req, res) => {
+    try {
+      const usuario = await Usuario.findByPk(req.params.id);
+      if (usuario) {
+        await usuario.destroy();
+        res.json({ message: 'Usuário deletado' });
+      } else {
+        res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+
+
+
 // Inicia o servidor
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
