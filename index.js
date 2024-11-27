@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { sequelize, Mapa, Contrato, Notificacao, Usuario, Cliente, Relatorio } = require('./models'); // importa os modelos corretamente
+const { sequelize, Mapa, Contrato, Notificacao, Usuario, Cliente, Relatorio, Outdoor, Agendamento} = require('./models'); // importa os modelos corretamente
 
 const app = express();
 app.use(bodyParser.json());
