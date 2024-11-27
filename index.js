@@ -367,6 +367,66 @@ app.delete('/relatorio/:id', async (req, res) => {
   }
 });
 
+// Rota para criar um outdoor
+app.post('/outdoor', async (req, res) => {
+  try {
+    const outdoor = await Outdoor.create(req.body);
+    res.status(201).json(outdoor);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/outdoors', async (req, res) => {
+    try {
+      const outdoors = await Outdoor.findAll();
+      res.json(outdoors);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.get('/outdoors/:id', async (req, res) => {
+    try {
+      const outdoor = await Outdoor.findByPk(req.params.id);
+      if (outdoor) {
+        res.json(outdoor);
+      } else {
+        res.status(404).json({ error: 'Outdoor não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.put('/outdoors/:id', async (req, res) => {
+    try {
+      const outdoor = await Outdoor.findByPk(req.params.id);
+      if (outdoor) {
+        await outdoor.update(req.body);
+        res.json(outdoor);
+      } else {
+        res.status(404).json({ error: 'Outdoor não encontrado' });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+});
+  
+app.delete('/outdoor/:id', async (req, res) => {
+    try {
+      const outdoor = await Outdoor.findByPk(req.params.id);
+      if (outdoor) {
+        await outdoor.destroy();
+        res.json({ message: 'Outdoor deletado' });
+      } else {
+        res.status(404).json({ error: 'Outdoor não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+
 // Inicia o servidor
 const PORT = 3000;
 app.listen(PORT, () => {

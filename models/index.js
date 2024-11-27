@@ -7,52 +7,124 @@ const sequelize = new Sequelize({
 });
 
 // Carrega os modelos passando `sequelize`
-const Contrato = require('./Contrato.js')(sequelize);
-const Notificacao = require('./Notificacao')(sequelize);
-const Usuario = require('./Usuario')(sequelize);
+const Agendamento = require('./Agendamento')(sequelize);
 const Cliente = require('./Cliente')(sequelize);
+const Contrato = require('./Contrato')(sequelize);
+const Outdoor = require('./Outdoor')(sequelize);
+const Mapa = require('./Mapa')(sequelize);
+const Usuario = require('./Usuario')(sequelize);
+const Notificacao = require('./Notificacao')(sequelize);
+const Relatorio = require('./Relatorio')(sequelize);
 
 
 //relaçao um para muitos cliente-contrato
 //Cliente
 Cliente.hasMany(Contrato, {
-  foreignKey: 'idCliente', 
-  as: 'contratos'
+    foreignKey: 'idCliente', 
+    as: 'contratos'
 }); 
 Contrato.belongsTo(Cliente, {
-  foreignKey: 'idCliente', 
-  as: 'cliente'
+    foreignKey: 'idCliente', 
+    as: 'cliente'
 });
 
 Cliente.hasOne(Agendamento, {
-  foreignKey: 'clienteId', 
-  as: 'agendamento'
+    foreignKey: 'clienteId', 
+    as: 'agendamento'
 }); 
 Agendamento.belongsTo(Cliente, {
-  foreignKey: 'clienteId', 
-  as: 'cliente'
+    foreignKey: 'clienteId', 
+    as: 'cliente'
 }); 
 
 //relaçao um para um 
 //Contrato
 Contrato.hasOne(Outdoor, {
-  foreignKey: 'contratoId', 
-  as: 'outdoor'
+    foreignKey: 'contratoId', 
+    as: 'outdoor'
 }); 
 Outdoor.belongsTo(Contrato, {
-  foreignKey: 'contratoId', 
-  as: 'contrato'
+    foreignKey: 'contratoId', 
+    as: 'contrato'
 }); 
+
+//Agendamento
+Agendamento.hasOne(Outdoor, {
+    foreignKey: 'agendamentoId', 
+    as: 'outdoor'
+}); 
+Outdoor.belongsTo(Agendamento, {
+    foreignKey: 'agendamentoId', 
+    as: 'agendamento'
+}); 
+
+//Mapa
+Mapa.hasMany(Outdoor, {
+    foreignKey: 'mapaId', 
+    as: 'outdoors'
+});
+Outdoor.belongsTo(Mapa, {
+    foreignKey: 'mapaId', 
+    as: 'mapa'
+});
+
+
+Mapa.hasOne(Agendamento,{
+    foreignKey: 'agendamentoId',
+    as: 'agendamento'
+});
+Agendamento.belongsTo(Mapa,{
+    ForeignKey: 'agendamentoId',
+    as: 'mapa'
+});
 
 //Notificação
 Notificacao.hasMany(Usuario,{
-  foreignKey: 'usuarioId',
-  as: 'usuario'
+    foreignKey: 'usuarioId',
+    as: 'usuario'
 });
 Usuario.belongsTo(Notificacao,{
-  foreignKey: 'usuarioId',
-  as: 'notificacao'
+    foreignKey: 'usuarioId',
+    as: 'notificacao'
 });
+
+//Relatorio
+Relatorio.hasMany(Outdoor,{
+    foreignKey: 'outdoorId',
+    as: 'outdoor'
+});
+Outdoor.belongsTo(Relatorio,{
+    foreignKey:'outdoorId',
+    as: 'relatorio'
+});
+
+Relatorio.hasOne(Cliente,{
+    foreignKey: 'clienteId',
+    as: 'cliente'
+});
+Cliente.belongsTo(Relatorio,{
+    foreignKey:'clienteId',
+    as: 'relatorio'
+});
+
+Relatorio.hasMany(Contrato,{
+    foreignKey: 'contratoId',
+    as: 'contrato'
+});
+Contrato.belongsTo(Relatorio,{
+    foreignKey:'contratoId',
+    as: 'relatorio'
+});
+
+Relatorio.hasMany(Usuario,{
+    foreignKey: 'usuarioId',
+    as: 'usuario'
+});
+Usuario.belongsTo(Relatorio,{
+    foreignKey:'usuarioId',
+    as: 'relatorio'
+});
+
 
 
 // Sincroniza o banco de dados
@@ -62,69 +134,12 @@ sequelize.sync()
 
 module.exports = { 
     sequelize, 
+    Cliente, 
     Contrato, 
+    Agendamento, 
+    Outdoor,
+    Mapa,
     Notificacao,
-    Usuario,
+    Relatorio, 
+    Usuario
 };
-
-
-// Rota para criar um outdoor
-app.post('/outdoor', async (req, res) => {
-  try {
-    const outdoor = await Outdoor.create(req.body);
-    res.status(201).json(outdoor);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-app.get('/outdoors', async (req, res) => {
-    try {
-      const outdoors = await Outdoor.findAll();
-      res.json(outdoors);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-});
-  
-app.get('/outdoors/:id', async (req, res) => {
-    try {
-      const outdoor = await Outdoor.findByPk(req.params.id);
-      if (outdoor) {
-        res.json(outdoor);
-      } else {
-        res.status(404).json({ error: 'Outdoor não encontrado' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-});
-  
-app.put('/outdoors/:id', async (req, res) => {
-    try {
-      const outdoor = await Outdoor.findByPk(req.params.id);
-      if (outdoor) {
-        await outdoor.update(req.body);
-        res.json(outdoor);
-      } else {
-        res.status(404).json({ error: 'Outdoor não encontrado' });
-      }
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-});
-  
-app.delete('/outdoor/:id', async (req, res) => {
-    try {
-      const outdoor = await Outdoor.findByPk(req.params.id);
-      if (outdoor) {
-        await outdoor.destroy();
-        res.json({ message: 'Outdoor deletado' });
-      } else {
-        res.status(404).json({ error: 'Outdoor não encontrado' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-});
-
