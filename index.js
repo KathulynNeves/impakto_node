@@ -427,6 +427,66 @@ app.delete('/outdoor/:id', async (req, res) => {
     }
 });
 
+// Rota para criar um agendamento
+app.post('/agendamento', async (req, res) => {
+  try {
+    const agendamento = await Agendamento.create(req.body);
+    res.status(201).json(agendamento);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/agendamentos', async (req, res) => {
+    try {
+      const agendamentos = await Agendamento.findAll();
+      res.json(agendamentos);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.get('/agendamentos/:id', async (req, res) => {
+    try {
+      const agendamento = await Agendamento.findByPk(req.params.id);
+      if (agendamento) {
+        res.json(agendamento);
+      } else {
+        res.status(404).json({ error: 'Agendamento não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+app.put('/agendamentos/:id', async (req, res) => {
+    try {
+      const agendamento = await Agendamento.findByPk(req.params.id);
+      if (agendamento) {
+        await agendamento.update(req.body);
+        res.json(agendamento);
+      } else {
+        res.status(404).json({ error: 'Agendamento não encontrado' });
+      }
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+});
+  
+app.delete('/agendamento/:id', async (req, res) => {
+    try {
+      const agendamento = await Agendamento.findByPk(req.params.id);
+      if (agendamento) {
+        await agendamento.destroy();
+        res.json({ message: 'Agendamento deletado' });
+      } else {
+        res.status(404).json({ error: 'Agendamento não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+});
+
 // Inicia o servidor
 const PORT = 3000;
 app.listen(PORT, () => {
